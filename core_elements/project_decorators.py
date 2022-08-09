@@ -1,4 +1,4 @@
-from core_elements.logging_element import logger
+from core_elements import logger
 
 
 def log_click_button(function_click):

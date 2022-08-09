@@ -4,6 +4,7 @@ import os
 ROOT_WORKING_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 WEBSITE = 'http://automationpractice.com/index.php'
 LOGS_FOLDER = 'logs_folder'
+USER_PASS = ROOT_WORKING_DIRECTORY + "\\user_pass.json"
 
 
 class Timeouts(object):

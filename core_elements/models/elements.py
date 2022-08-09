@@ -1,10 +1,11 @@
 from retry import retry
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.select import Select
 from selenium.common.exceptions import ElementNotInteractableException, ElementClickInterceptedException
 from settings import Timeouts
 from step_impl.utils import Driver
-from core_elements.logging_element import logger
+from core_elements import logger
 
 
 class WebElement(object):
@@ -50,6 +51,56 @@ class WebElement(object):
         return self.element.is_displayed()
 
 
+class Dropdown(WebElement):
+    def __init__(self, locator, timeout=Timeouts.MEDIUM):
+        super(Dropdown, self).__init__(locator=locator, timeout=timeout)
+
+        self.driver.wait_for_element_to_be_clickable(self.locator)
+
+    @property
+    def element_selected(self):
+        """Returns string that contains the selected option"""
+        select = Select(self.element)
+        return select.first_selected_option.text
+
+    @element_selected.setter
+    @retry(tries=3, delay=1)
+    def selected(self, value):
+        """Selects dropdown value using the text option from argument"""
+        self.scroll_to_element()
+        select = Select(self.element)
+        select.select_by_visible_text(value)
+
+
+class Checkbox(WebElement):
+
+    def __init__(self, locator, timeout=Timeouts.MEDIUM):
+        super(Checkbox, self).__init__(locator=locator, timeout=timeout)
+
+        self.driver.wait_for_element_to_be_clickable(locator)
+
+    def enable_element(self):
+        if not self.check_element_is_enabled:
+            self.scroll_to_element()
+            self.element.click()
+            logger.info("Element enabled")
+        else:
+            logger.info("Element was already enabled")
+
+    def disable_element(self):
+        if self.check_element_is_enabled:
+            self.scroll_to_element()
+            self.element.click()
+            logger.info("Element disabled")
+        else:
+            logger.info("Element was already disabled")
+
+    @property
+    def check_element_is_enabled(self):
+        """Function to check if element is enabled"""
+        return self.element.is_enabled()
+
+
 class Button(WebElement):
     """
     Custom WebElement class made for buttons
@@ -61,6 +112,7 @@ class Button(WebElement):
     """
     def __init__(self, locator, timeout=Timeouts.MEDIUM):
         super(Button, self).__init__(locator=locator, timeout=timeout)
+
         self.driver.wait_for_element_to_be_clickable(self.locator)
 
     @retry(tries=3, delay=1)

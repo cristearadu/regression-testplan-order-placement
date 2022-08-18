@@ -2,7 +2,8 @@ from retry import retry
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
-from selenium.common.exceptions import ElementNotInteractableException, ElementClickInterceptedException
+from selenium.common.exceptions import ElementNotInteractableException, ElementClickInterceptedException, \
+    NoSuchElementException
 from settings import Timeouts
 from step_impl.utils import Driver
 from core_elements import logger
@@ -20,12 +21,13 @@ class WebElement(object):
         - is enabled
         - is displayed
     """
-    def __init__(self, locator, timeout=Timeouts.MEDIUM):
+    def __init__(self, locator, timeout=Timeouts.MEDIUM, wait_for_visibility_of_element=True):
         self.driver = Driver.driver
         self.locator = locator
         self.timeout = timeout
         self.wait = WebDriverWait(self.driver, timeout)
-        self.wait.until(EC.visibility_of_element_located(self.locator))
+        if wait_for_visibility_of_element:
+            self.wait.until(EC.visibility_of_element_located(self.locator))
 
     @property
     def element(self):
@@ -52,24 +54,44 @@ class WebElement(object):
 
 
 class Dropdown(WebElement):
-    def __init__(self, locator, timeout=Timeouts.MEDIUM):
-        super(Dropdown, self).__init__(locator=locator, timeout=timeout)
-
-        self.driver.wait_for_element_to_be_clickable(self.locator)
+    def __init__(self, locator, timeout=Timeouts.ELEMENT):
+        super(Dropdown, self).__init__(locator=locator, timeout=timeout, wait_for_visibility_of_element=False)
 
     @property
-    def element_selected(self):
+    def dropdown_value_by_text(self):
         """Returns string that contains the selected option"""
         select = Select(self.element)
-        return select.first_selected_option.text
+        return select.first_selected_option
 
-    @element_selected.setter
+    @dropdown_value_by_text.setter
     @retry(tries=3, delay=1)
-    def selected(self, value):
+    def dropdown_value_by_text(self, value):
         """Selects dropdown value using the text option from argument"""
         self.scroll_to_element()
-        select = Select(self.element)
-        select.select_by_visible_text(value)
+        self.select = Select(self.element)
+
+        try:
+            self.select.select_by_visible_text(value)
+        except NoSuchElementException:
+            logger.error("Tried to select the element by text. Trying by value now")
+            self.select_element_by_dropdown_values(value)
+
+    def select_element_by_dropdown_values(self, value):
+        for text_elem in self.dropdown_list:
+            if value in text_elem:
+                self.select.select_by_visible_text(text_elem)
+                break
+        else:
+            raise AttributeError(f"Failed to select dropdown value \'{value}\' for locator \'{self.locator}\'")
+
+    @property
+    def dropdown_list(self):
+        dropdown_list_elements = self.driver.find_elements('xpath', self.locator[1]+'/option')
+        dropdown_list = []
+        for i in range(len(dropdown_list_elements)):
+            dropdown_list.append(dropdown_list_elements[i].text)
+
+        return dropdown_list
 
 
 class Checkbox(WebElement):
@@ -99,6 +121,21 @@ class Checkbox(WebElement):
     def check_element_is_enabled(self):
         """Function to check if element is enabled"""
         return self.element.is_enabled()
+
+
+class RadioButton(WebElement):
+    """
+    Custom WebElement class made for radio buttons
+
+    Specific functions for buttons:
+        - enable radio
+    """
+
+    def __init__(self, locator, timeout=Timeouts.ELEMENT):
+        super(RadioButton, self).__init__(locator=locator, timeout=timeout, wait_for_visibility_of_element=False)
+
+    def enable_radio(self):
+        self.element.click()
 
 
 class Button(WebElement):

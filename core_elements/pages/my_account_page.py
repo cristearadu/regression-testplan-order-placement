@@ -6,6 +6,7 @@ from core_elements.models.elements import Button, TextBox, Dropdown, RadioButton
 from core_elements.project_decorators import log_click_button, log_attribute_and_value
 from settings import Timeouts
 
+
 class AuthenticationPage(BasePage):
 
     SIGN_IN_EMAIL_INPUT = (By.XPATH, '//input[@id="email"]')
@@ -111,9 +112,47 @@ class CreateAccount(BasePage):
     def date_of_birth_year(self, year: str):
         Dropdown(self.YEARS_DROPDOWN).dropdown_value_by_text = year
 
+    @log_attribute_and_value
+    def first_name_textbox(self, first_name: str):
+        TextBox(self.FIRST_NAME_TEXTBOX).contents = first_name
+
+    @log_attribute_and_value
+    def last_name_textbox(self, last_name: str):
+        TextBox(self.LAST_NAME_TEXTBOX).contents = last_name
+
+    @log_attribute_and_value
+    def company(self, company_name: str):
+        TextBox(self.COMPANY_TEXTBOX).contents = company_name
+
+    @log_attribute_and_value
+    def address_1_textbox(self, address: str):
+        TextBox(self.ADDRESS_1_TEXTBOX).contents = address
+
+    @log_attribute_and_value
+    def city(self, city_name: str):
+        TextBox(self.CITY_TEXTBOX).contents = city_name
+
+    @log_attribute_and_value
+    def state_dropdown(self, state_name: str):
+        Dropdown(self.STATE_DROPDOWN).dropdown_value_by_text = state_name
+
+    @log_attribute_and_value
+    def postcode(self, postcode_number: str):
+        TextBox(self.POSTCODE_TEXTBOX).contents = postcode_number
+
+    @log_attribute_and_value
+    def country_dropdown(self, country: str):
+        Dropdown(self.COUNTRY_DROPDOWN).dropdown_value_by_text = country
+
+    @log_attribute_and_value
+    def home_phone(self, home_phone_number: str):
+        TextBox(self.HOME_PHONE).contents = home_phone_number
+
     def complete_mandatory_client_sign_in_data(self, personal_information_first_name, personal_information_last_name,
                                                password, date_of_birth_day, date_of_birth_month, date_of_birth_year,
-                                               email_value):
+                                               email_value, first_name_textbox, last_name_textbox, company,
+                                               address_1_textbox, city, state_dropdown, postcode, country_dropdown,
+                                               home_phone):
         """
         Function that completes data for singing in.
         Implemented only for mandatory data.
@@ -128,7 +167,16 @@ class CreateAccount(BasePage):
         self.date_of_birth_day(date_of_birth_day)
         self.date_of_birth_month(date_of_birth_month)
         self.date_of_birth_year(date_of_birth_year)
+        self.first_name_textbox(first_name_textbox)
+        self.last_name_textbox(last_name_textbox)
+        self.company(company)
+        self.address_1_textbox(address_1_textbox)
+        self.city(city)
+        self.state_dropdown(state_dropdown)
+        self.postcode(postcode)
+        self.country_dropdown(country_dropdown)
+        self.home_phone(home_phone)
 
-        import pdb; pdb.set_trace()
+
 class MyAccount(BasePage):
     ORDER_HISTORY_AND_DETAILS = (By.XPATH, '//div[@id="center_column"]/div/div[1]/ul/li[1]/a/span')

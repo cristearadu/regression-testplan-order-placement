@@ -21,8 +21,8 @@ def log_in_using_valid_credentials():
 @step("Write unused email address")
 def write_unused_email_address():
     authentication_page = AuthenticationPage()
-    create_user = CreateNewUser()
-    data_store.new_username = create_user.new_username
+    data_store.create_user = CreateNewUser()
+    data_store.new_username = data_store.create_user.new_username
     logger.info(f"Creating new valid user using: {data_store.new_username}")
 
     authentication_page.create_account_email_address(data_store.new_username)
@@ -45,7 +45,18 @@ def write_valid_data_for_user(table):
         password=data_store.sign_in_client_information['password'],
         date_of_birth_day=data_store.sign_in_client_information['day'],
         date_of_birth_month=data_store.sign_in_client_information['month'],
-        date_of_birth_year=data_store.sign_in_client_information['year'])
+        date_of_birth_year=data_store.sign_in_client_information['year'],
+        first_name_textbox=data_store.sign_in_client_information['first_name'],
+        last_name_textbox=data_store.sign_in_client_information['last_name'],
+        company=data_store.sign_in_client_information['company'],
+        address_1_textbox=data_store.sign_in_client_information['address'],
+        city=data_store.sign_in_client_information['city'],
+        state_dropdown=data_store.sign_in_client_information['state'],
+        postcode=data_store.sign_in_client_information['post_code'],
+        country_dropdown=data_store.sign_in_client_information['country'],
+        home_phone=data_store.sign_in_client_information['phone_number'])
+
+    data_store.create_user.modify_new_user_file()
 
 
 """

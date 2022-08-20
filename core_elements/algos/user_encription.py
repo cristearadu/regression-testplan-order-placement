@@ -20,6 +20,9 @@ class ReadJson:
         message_bytes = base64.b64decode(base64_bytes)
         return message_bytes.decode('ascii')
 
+    def encode_string(self, string_to_encode):
+        return base64.b64encode(bytes(string_to_encode, 'utf-8')).decode()
+
 
 class UserPass(ReadJson):
 
@@ -53,21 +56,20 @@ class CreateNewUser(ReadJson):
         return self.decode_string(self.__new_username)
 
     def __create_new_username(self, old_username):
-        last_created_user_list = self._data['new_username'].split('@')
+        last_created_user_list = old_username.split('@')
 
         literal_and_number_pattern = r"([a-z]+)([0-9]+)"
         email_address_match = re.match(literal_and_number_pattern, last_created_user_list[0])
         assert email_address_match, f"Failed to find a specific match for this pattern: {literal_and_number_pattern}\n" \
                                     f"Input data: {last_created_user_list}"
         email_address_items = email_address_match.groups()
-        # todo
-        new_username = f""  # todo
+        email_address_items = email_address_items[0], str(int(email_address_items[1]) + 1)
 
-        new_username = f"{last_created_user_list[0]}@{last_created_user_list[1]}"
+        new_username = f"{email_address_items[0]}{email_address_items[1]}@{last_created_user_list[-1]}"
         return new_username
 
     def modify_new_user_file(self):
-        logger.info("Incrementing the new user with one for the new user")
-        self._data['last_created_username'] = self._data['new_username']
-        self._data['new_username'] = self.__create_new_username(self._data['new_username'])
+        self._data['last_created_username'] = self.encode_string(self.new_username)
+        new_username = self.__create_new_username(self.new_username)
+        self._data['new_username'] = self.encode_string(new_username)
         overwrite_json_file(self._file, self._data)

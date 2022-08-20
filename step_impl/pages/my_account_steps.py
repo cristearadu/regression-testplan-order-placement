@@ -3,6 +3,7 @@ from step_impl.utils import Driver
 from core_elements.pages import AuthenticationPage, CreateAccount, MyAccount
 from core_elements import logger
 from core_elements.algos import UserPass, CreateNewUser, GaugeData
+from core_elements.expected_errors import RegisterError
 
 
 @step("Log in using valid credentials")
@@ -18,6 +19,16 @@ def log_in_using_valid_credentials():
     authentication_page.click_sign_in_button()
 
 
+@step("Write last registered email address")
+def write_last_registered_email_address():
+
+    authentication_page = AuthenticationPage()
+    data_store.create_user = CreateNewUser()
+
+    authentication_page.create_account_email_address(data_store.create_user.last_created_username)
+    authentication_page.click_create_account_button()
+
+
 @step("Write unused email address")
 def write_unused_email_address():
     authentication_page = AuthenticationPage()
@@ -31,7 +42,7 @@ def write_unused_email_address():
     assert Driver.driver.check_exists(CreateAccount.FIRST_NAME_TEXTBOX), "Failed to load \'Create Account\' page"
 
 
-@step("Write valid data for user <table>")
+@step("Write valid data for user and Register <table>")
 def write_valid_data_for_user(table):
     data_store.sign_in_client_information = GaugeData.table_to_dict(table)
     logger.info(f"Using sign in information for client: {data_store.sign_in_client_information}")
@@ -55,6 +66,8 @@ def write_valid_data_for_user(table):
         postcode=data_store.sign_in_client_information['post_code'],
         country_dropdown=data_store.sign_in_client_information['country'],
         home_phone=data_store.sign_in_client_information['phone_number'])
+
+    create_account.click_register_button()
 
     data_store.create_user.modify_new_user_file()
 
@@ -83,3 +96,18 @@ def verify_my_account_page_has_loaded():
         "Failed to load \'Order and History Details\' element"
     logger.info("Authentication page has loaded")
 
+
+@step("Verify an error appears on page after clicking on register")
+def verify_error_appears_after_clicking_on_register():
+    assert Driver.driver.check_exists(AuthenticationPage.FAIL_CREATE_ACCOUNT_TEXTBOX), \
+        f"The expected error did not appear for already registered user"
+    logger.info("The expected error has appeared for already registered user")
+
+
+@step("Verify the error message is correctly thrown for already registered user")
+def verify_the_error_message_already_registered_user():
+    authentication_page = AuthenticationPage()
+    assert RegisterError.already_registered_user.value in authentication_page.fail_to_create_account_textbox, \
+        f"Failed to find the expected message error. Expected results: {RegisterError.already_registered_user.value}" \
+        f"\nActual resutls: {authentication_page.fail_to_create_account_textbox}"
+    logger.info(f"The expected error message has correctly appeared: {RegisterError.already_registered_user.value}")

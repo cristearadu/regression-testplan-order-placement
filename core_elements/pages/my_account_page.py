@@ -16,6 +16,8 @@ class AuthenticationPage(BasePage):
     CREATE_ACCOUNT_MAIL = (By.XPATH, '//input[@id="email_create"]')
     CREATE_ACCOUNT_BUTTON = (By.XPATH, '//button[@id="SubmitCreate"]/span')
 
+    FAIL_CREATE_ACCOUNT_TEXTBOX = (By.XPATH, '//div[@id="create_account_error"]/ol/li')
+
     def __init__(self):
         super(AuthenticationPage, self).__init__()
         self.driver.wait_for_element_to_be_visible(self.SIGN_IN_EMAIL_INPUT)
@@ -39,6 +41,10 @@ class AuthenticationPage(BasePage):
     @log_attribute_and_value
     def create_account_email_address(self, email_address: str):
         TextBox(self.CREATE_ACCOUNT_MAIL).contents = email_address
+
+    @property
+    def fail_to_create_account_textbox(self):
+        return TextBox(self.FAIL_CREATE_ACCOUNT_TEXTBOX).contents
 
 
 class CreateAccount(BasePage):
@@ -66,6 +72,8 @@ class CreateAccount(BasePage):
     POSTCODE_TEXTBOX = (By.XPATH, '//input[@id="postcode"]')
     COUNTRY_DROPDOWN = (By.XPATH, '//select[@id="id_country"]')
     HOME_PHONE = (By.XPATH, '//input[@id="phone"]')
+
+    REGISTER_BUTTON = (By.XPATH, '//button[@id="submitAccount"]/span')
 
     def __init__(self, timeout=Timeouts.ELEMENT):
         super(CreateAccount, self).__init__()
@@ -147,6 +155,10 @@ class CreateAccount(BasePage):
     @log_attribute_and_value
     def home_phone(self, home_phone_number: str):
         TextBox(self.HOME_PHONE).contents = home_phone_number
+
+    @log_click_button
+    def click_register_button(self):
+        Button(self.REGISTER_BUTTON).click()
 
     def complete_mandatory_client_sign_in_data(self, personal_information_first_name, personal_information_last_name,
                                                password, date_of_birth_day, date_of_birth_month, date_of_birth_year,

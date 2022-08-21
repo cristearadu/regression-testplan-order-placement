@@ -1,13 +1,13 @@
-from retry import retry
+
 import random
 from selenium.webdriver.common.by import By
-from core_elements.pages.base_page import BasePage
+from core_elements.pages.base_page import HeaderBasePage
 from core_elements.models.elements import Button, TextBox, Dropdown, RadioButton
 from core_elements.project_decorators import log_click_button, log_attribute_and_value
 from settings import Timeouts
 
 
-class AuthenticationPage(BasePage):
+class AuthenticationPage(HeaderBasePage):
 
     SIGN_IN_EMAIL_INPUT = (By.XPATH, '//input[@id="email"]')
     SIGN_IN_PASSWORD_INPUT = (By.XPATH, '//input[@id="passwd"]')
@@ -47,7 +47,7 @@ class AuthenticationPage(BasePage):
         return TextBox(self.FAIL_CREATE_ACCOUNT_TEXTBOX).contents
 
 
-class CreateAccount(BasePage):
+class CreateAccount(HeaderBasePage):
 
     # Personal Information
     GENDER_MALE_RADIO = (By.XPATH, '//input[@id="id_gender1"]')
@@ -190,5 +190,5 @@ class CreateAccount(BasePage):
         self.home_phone(home_phone)
 
 
-class MyAccount(BasePage):
+class MyAccount(HeaderBasePage):
     ORDER_HISTORY_AND_DETAILS = (By.XPATH, '//div[@id="center_column"]/div/div[1]/ul/li[1]/a/span')

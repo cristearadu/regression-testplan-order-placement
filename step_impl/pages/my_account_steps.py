@@ -91,7 +91,7 @@ def verify_my_account_page_has_loaded():
 
 @step("Verify the user is signed in")
 def verify_my_account_page_has_loaded():
-    assert Driver.driver.check_exists(AuthenticationPage.SIGN_OUT), "Failed to see \'Sign Out\' button"
+    assert Driver.driver.check_exists(AuthenticationPage.SIGN_OUT_BUTTON), "Failed to see \'Sign Out\' button"
     assert Driver.driver.check_exists(MyAccount.ORDER_HISTORY_AND_DETAILS), \
         "Failed to load \'Order and History Details\' element"
     logger.info("Authentication page has loaded")
@@ -109,5 +109,5 @@ def verify_the_error_message_already_registered_user():
     authentication_page = AuthenticationPage()
     assert RegisterError.already_registered_user.value in authentication_page.fail_to_create_account_textbox, \
         f"Failed to find the expected message error. Expected results: {RegisterError.already_registered_user.value}" \
-        f"\nActual resutls: {authentication_page.fail_to_create_account_textbox}"
+        f"\nActual results: {authentication_page.fail_to_create_account_textbox}"
     logger.info(f"The expected error message has correctly appeared: {RegisterError.already_registered_user.value}")

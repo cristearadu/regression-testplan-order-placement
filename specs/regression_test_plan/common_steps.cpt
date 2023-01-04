@@ -1,0 +1,11 @@
+
+
+# User Sign In
+
+* From home page go to Sign in page
+* Log in using valid credentials
+* Verify the user is signed in
+
+# Go to Contact Us page
+* Press on Contact us Button
+* Verify Contact us page has loaded

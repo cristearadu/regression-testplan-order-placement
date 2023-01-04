@@ -11,7 +11,7 @@ For this project you need to install Gauge, create a Gauge_Home folder and add '
 system variables. Install html-report, python and screenshot using `gauge install {package_name}`. Test using 
 `gauge --version` command to verify the installed plugins on your device.
 ```commandline
-PS E:\Python\bitedender-interviu> gauge --version
+PS E:\Python\file> gauge --version
 Gauge version: 1.4.3
 Commit Hash: f98dd40
 
